@@ -83,6 +83,306 @@
         <!-- Header and Main Title -->
         <header class="text-center mb-10 pb-5 border-b border-gray-700">
             <h1 class="text-4xl md:text-6xl section-title font-extrabold leading-tight">Theories of Personality: A Midterm Requirement</h1>
+            <p class="text-lg text-gray-400 mt-2">by Nina Khim B. Albento BS PSYCHOLOGY 2B</p>
+        </header>
+
+        <!-- Main Content Grid -->
+        <div class="flex flex-col lg:flex-row gap-8">
+
+            <!-- Left Sidebar: Table of Contents (TOC) -->
+            <aside class="lg:w-1/4 p-4 rounded-lg interactive-card h-fit sticky top-0">
+                <h2 class="text-2xl font-bold section-title mb-4">Theorists & Frameworks</h2>
+                <nav id="toc-menu">
+                    <!-- TOC items will be populated by JS -->
+                </nav>
+            </aside>
+
+            <!-- Right Content Area: The Magazine Pages -->
+            <main class="lg:w-3/4 content-area max-h-[80vh] overflow-y-auto">
+                <div id="theory-content">
+                    <!-- Default Landing Page -->
+                    <div id="landing-page" class="p-6">
+                        <h2 class="text-3xl section-title font-bold mb-4">Welcome to the Psyche Explorer</h2>
+                        <p class="text-lg mb-6 text-gray-300">This academic guide provides a detailed look into five core personality theories. Select a theorist from the left menu to access:</p>
+                        <ul class="list-disc list-inside space-y-3 ml-4 text-gray-300">
+                            <li>**Detailed Explanations** of the core concepts, development, and psychopathology.</li>
+                            <li>**Interactive Concept Cards** to simplify complex ideas.</li>
+                            <li>**AI Learning Assistant** powered by Gemini, for quick summaries and modern scenario generation.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Content for selected theory will be injected here -->
+                </div>
+            </main>
+        </div>
+
+    </div>
+
+    <script type="module">
+        // --- GEMINI API UTILITIES ---
+        const apiKey = ""; // API Key is left empty as per instructions.
+        const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=" + apiKey;
+
+        /**
+         * Generic function to make a robust API call with exponential backoff.
+         */
+        async function callGeminiAPI(systemInstruction, userQuery) {
+            const maxRetries = 5;
+            let delay = 1000;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: {
+                    parts: [{ text: systemInstruction }]
+                },
+            };
+
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.status === 429) {
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        delay *= 2;
+                        continue;
+                    }
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                    if (!text) {
+                        throw new Error("Received empty or malformed response from API.");
+                    }
+
+                    return text;
+
+                } catch (error) {
+                    if (i === maxRetries - 1) {
+                        console.error("Gemini API call failed after multiple retries:", error);
+                        return "Error: Could not retrieve information. Please try again later.";
+                    }
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    delay *= 2;
+                }
+            }
+        }
+        
+        /**
+         * Sets the loading state on a specific button and output area.
+         */
+        function setLoadingState(buttonId, outputId, isLoading) {
+            const button = document.getElementById(buttonId);
+            const output = document.getElementById(outputId);
+            const spinner = button.querySelector('.loading-animation');
+
+            if (isLoading) {
+                button.disabled = true;
+                output.innerHTML = '<div class="flex items-center text-amber-400"><div class="loading-animation mr-3" style="display: block;"></div> Generating content...</div>';
+                spinner.style.display = 'block';
+            } else {
+                button.disabled = false;
+                spinner.style.display = 'none';
+            }
+        }
+
+        // --- GEMINI FEATURE FUNCTIONS ---
+
+        async function generateQuickSummary(theoryId) {
+            const theory = theories.find(t => t.id === theoryId);
+            const buttonId = `${theoryId}-summary-btn`;
+            const outputId = `${theoryId}-llm-output`;
+            
+            setLoadingState(buttonId, outputId, true);
+
+            const systemInstruction = "You are a concise academic writer. Generate a single paragraph (max 3 sentences) summary of the provided psychological theory. Focus only on the most essential core mechanism (e.g., conflict, striving, archetypes).";
+            const userQuery = `Summarize the core of ${theory.theory} by ${theory.name}.`;
+
+            const result = await callGeminiAPI(systemInstruction, userQuery);
+            
+            setLoadingState(buttonId, outputId, false);
+            document.getElementById(outputId).innerHTML = `<p class="text-sm italic">${result}</p>`;
+        }
+
+        async function generateModernScenario(theoryId) {
+            const theory = theories.find(t => t.id === theoryId);
+            const buttonId = `${theoryId}-scenario-btn`;
+            const outputId = `${theoryId}-llm-output`;
+            
+            setLoadingState(buttonId, outputId, true);
+            
+            const systemInstruction = "You are a creative writer specializing in modern psychology examples. Create a single, short, modern-day scenario (3-4 sentences) that perfectly illustrates the key concept of the provided theory, using modern contexts like social media, remote work, or technology. Format the response as a clear, single paragraph.";
+            const userQuery = `Create a modern-day example illustrating the key concept of ${theory.theory} by ${theory.name}. For Freud, focus on the Id/Ego conflict. For Jung, focus on a Shadow projection. For Adler, focus on compensating for inferiority. For Horney, focus on a neurotic trend (Moving Away). For Fromm, focus on the Need for Relatedness.`;
+
+            const result = await callGeminiAPI(systemInstruction, userQuery);
+            
+            setLoadingState(buttonId, outputId, false);
+            document.getElementById(outputId).innerHTML = `<p class="text-sm italic">${result}</p>`;
+        }
+        
+        // --- E-MAGAZINE DATA (Detailed Content) ---
+
+        const theories = [
+            {
+                id: 'freud',
+                name: 'Sigmund Freud',
+                theory: 'Psychoanalytic Theory',
+                content: `
+                    <h2 class="text-4xl section-title font-bold mb-6">Sigmund Freud: Psychoanalytic Theory</h2>
+                    <p class="mb-4 text-gray-300">Freud's theory is built upon the foundation of unconscious motives, conflicts, and early childhood experiences as the primary forces shaping personality. It is a deterministic model where the conflict between primal drives and societal norms defines the individual.</p>
+
+                    <h3 class="text-3xl section-title font-bold mt-8 mb-4 border-b border-gray-700 pb-2">Structural Model of Personality (Id, Ego, Superego)</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="interactive-card p-4 rounded-md">
+                            <h4 class="font-bold text-red-400 text-xl mb-2">Id (The Primal)</h4>
+                            <p class="text-sm text-gray-400 detail-point">Operates on the Pleasure Principle. It seeks immediate gratification for all needs, wishes, urges, and demands, without regard for reality or morality.</p>
+                        </div>
+                        <div class="interactive-card p-4 rounded-md">
+                            <h4 class="font-bold text-blue-400 text-xl mb-2">Ego (The Mediator)</h4>
+                            <p class="text-sm text-gray-400 detail-point">Operates on the Reality Principle. The ego is the rational part of the mind that mediates the unrealistic demands of the Id and the controlling dictates of the Superego.</p>
+                        </div>
+                        <div class="interactive-card p-4 rounded-md">
+                            <h4 class="font-bold text-green-400 text-xl mb-2">Superego (The Moral)</h4>
+                            <p class="text-sm text-gray-400 detail-point">Operates on the Idealistic Principle. It is the moral arm of the personality, internalizing parental and societal standards, becoming the source of conscience and guilt.</p>
+                        </div>
+                    </div>
+
+                    <h3 class="text-3xl section-title font-bold mt-8 mb-4 border-b border-gray-700 pb-2">Psychosexual Stages of Development</h3>
+                    <p class="text-gray-300 mb-4">Personality is largely formed by the age of five, as the libido (sexual energy) fixates on different erogenous zones.</p>
+
+                    <div class="space-y-4 text-gray-300">
+                        <div class="detail-point">
+                            <p class="font-bold text-yellow-400">Oral Stage (Birth–1 Year):</p>
+                            <p>Erogenous zone is the mouth. Conflict centers on feeding and weaning. Fixation can lead to oral character traits like overeating, smoking, or excessive dependence.</p>
+                        </div>
+                        <div class="detail-point">
+                            <p class="font-bold text-yellow-400">Anal Stage (1–3 Years):</p>
+                            <p>Erogenous zone is the anus. Focus on toilet training and controlling bodily functions. Fixation leads to the anal character: orderliness, stinginess, and obstinacy.</p>
+                        </div>
+                        <div class="detail-point">
+                            <p class="font-bold text-yellow-400">Phallic Stage (3–6 Years):</p>
+                            <p>Genitals become the leading erogenous zone. This stage includes the Male Oedipus complex (rivalry with father, desire for mother) and the **Female Oedipus (Electra) complex** (penis envy, desire for father, hostility toward mother). The resolution of this stage, often through castration anxiety in males, is crucial for superego formation.</p>
+                        </div>
+                        <div class="detail-point">
+                            <p class="font-bold text-yellow-400">Latency Period (6–12 Years):</p>
+                            <p>Sexual impulses are repressed. Libido is redirected to non-sexual pursuits like school, friendships, and cultural activities.</p>
+                        </div>
+                        <div class="detail-point">
+                            <p class="font-bold text-yellow-400">Genital Period (Puberty Onward):</p>
+                            <p>Reawakening of sexual aims and focus on mature, reciprocal relationships and reproduction. The libido is directed outward.</p>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-3xl section-title font-bold mt-8 mb-4 border-b border-gray-700 pb-2">Concept of Humanity</h3>
+                    <ul class="list-disc list-inside ml-4 text-gray-300 space-y-2">
+                        <li>Deterministic: Behavior is fundamentally ruled by unconscious drives.</li>
+                        <li>Pessimistic: Humans are in constant inner conflict between the Id and the Superego, mediated by the Ego.</li>
+                        <li>Past-Driven (Causality): Childhood experiences determine adult personality.</li>
+                        <li>Biological Focus: Instincts, primarily sex and aggression, are the core drivers of behavior.</li>
+                    </ul>
+                `
+            },
+            {
+                id: 'jung',
+                name: 'Carl Jung',
+                theory: 'Analytical Psychology',
+                content: `
+                    <h2 class="text-4xl section-title font-bold mb-6">Carl Jung: Analytical Psychology</h2>
+                    <p class="mb-4 text-gray-300">Jung's theory moved beyond Freud's singular focus on sex and aggression, emphasizing a deeper, shared unconscious and a person's striving toward wholeness (Individuation). This process is driven by innate, inherited elements called Archetypes.</p>
+
+                    <h3 class="text-3xl section-title font-bold mt-8 mb-4 border-b border-gray-700 pb-2">The Structure of the Psyche</h3>
+                    <div class="space-y-4 text-gray-300">
+                        <div class="detail-point">
+                            <p class="font-bold text-blue-400">Personal Unconscious:</p>
+                            <p>Contains repressed thoughts, forgotten experiences, and material that was once conscious. These form complexes, emotionally-toned ideas grouped around a central element.</p>
+                        </div>
+                        <div class="detail-point">
+                            <p class="font-bold text-blue-400">Collective Unconscious:</p>
+                            <p>The deepest, most inaccessible layer of the psyche. It contains highly developed, inherited tendencies to react to the world in a particular way. This is the reservoir of the Archetypes.</p>
+                        </div>
+                    </div>
+
+                    <h3 class="text-3xl section-title font-bold mt-8 mb-4 border-b border-gray-700 pb-2">Key Archetypes</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="interactive-card p-4 rounded-md">
+                            <h4 class="font-bold text-yellow-400 text-xl mb-2">Persona (The Mask)</h4>
+                            <p class="text-sm text-gray-400 detail-point">The side of personality we show to the world; the mask designed to make a favorable impression and conceal the true self. Over-identification leads to superficiality.</p>
+                        </div>
+                        <div class="interactive-card p-4 rounded-md">
+                            <h4 class="font-bold text-yellow-400 text-xl mb-2">Shadow (The Dark Side)</h4>
+                            <p class="text-sm text-gray-400 detail-point">The dark, immoral, and unpleasant side of personality. Repressed qualities that the individual refuses to acknowledge, which often get projected onto others ("Everything that irritates us about others can lead us to an understanding of ourselves").</p>
+                        </div>
+                        <div class="interactive-card p-4 rounded-md">
+                            <h4 class="font-bold text-yellow-400 text-xl mb-2">Anima and Animus</h4>
+                            <p class="text-sm text-gray-400 detail-point">The feminine side in men (Anima) and the masculine side in women (Animus). Integration of these counter-sexual elements is essential for individuation.</p>
+                        </div>
+                        <div class="interactive-card p-4 rounded-md">
+                            <h4 class="font-bold text-yellow-400 text-xl mb-2">Self (Wholeness)</h4>
+                            <p class="text-sm text-gray-400 detail-point">The ultimate archetype. It is the drive toward coherence and the unification of all aspects of the unconscious and conscious mind. This realization process is called Individuation.</p>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-3xl section-title font-bold mt-8 mb-4 border-b border-gray-700 pb-2">Concept of Humanity</h3>
+                    <ul class="list-disc list-inside ml-4 text-gray-300 space-y-2">
+                        <li>More Free Choice: Jung allowed for more conscious choice in navigating life's path.</li>
+                        <li>Optimistic: Optimistic about human growth and the possibility of Individuation.</li>
+                        <li>Goal-Driven (Teleology): Behavior is shaped by future wholen        .toc-item:hover {
+            color: var(--color-accent-gold);
+            transform: translateX(4px);
+        }
+        .active-theory {
+            border-left: 5px solid var(--color-accent-gold) !important;
+            padding-left: 1rem;
+            color: var(--color-text-primary);
+            background-color: #2a2a2a;
+        }
+        .interactive-card {
+            background-color: #2a2a2a;
+            border: 1px solid var(--color-accent-highlight);
+        }
+        .detail-point {
+            border-left: 4px solid var(--color-accent-gold);
+            padding-left: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        /* Custom scrollbar */
+        .content-area::-webkit-scrollbar {
+            width: 8px;
+        }
+        .content-area::-webkit-scrollbar-thumb {
+            background-color: var(--color-accent-gold);
+            border-radius: 10px;
+        }
+        .loading-animation {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #FFD700;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 flex justify-center">
+
+    <div id="app" class="magazine-container rounded-xl w-full p-4 md:p-10">
+
+        <!-- Header and Main Title -->
+        <header class="text-center mb-10 pb-5 border-b border-gray-700">
+            <h1 class="text-4xl md:text-6xl section-title font-extrabold leading-tight">Theories of Personality: A Midterm Requirement</h1>
             <p class="text-lg text-gray-400 mt-2">By Nina Khim B. ALbento BS PSYCHOLOGY 2B</p>
         </header>
 
