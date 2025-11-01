@@ -83,7 +83,7 @@
         <!-- Header and Main Title -->
         <header class="text-center mb-10 pb-5 border-b border-gray-700">
             <h1 class="text-4xl md:text-6xl section-title font-extrabold leading-tight">Theories of Personality: A Midterm Requirement</h1>
-            <p class="text-lg text-gray-400 mt-2">By Nina Khim B. Albento BS PSYCHOLOGY 2B</p>
+            <p class="text-lg text-gray-400 mt-2">By Nina Khim B. ALbento BS PSYCHOLOGY 2B</p>
         </header>
 
         <!-- Main Content Grid -->
@@ -152,7 +152,7 @@
                     }
 
                     if (!response.ok) {
-                        throw new Error(HTTP error! status: ${response.status});
+                        throw new Error(`HTTP error! status: ${response.status}`);
                     }
 
                     const result = await response.json();
@@ -197,34 +197,34 @@
 
         async function generateQuickSummary(theoryId) {
             const theory = theories.find(t => t.id === theoryId);
-            const buttonId = ${theoryId}-summary-btn;
-            const outputId = ${theoryId}-llm-output;
+            const buttonId = `${theoryId}-summary-btn`;
+            const outputId = `${theoryId}-llm-output`;
             
             setLoadingState(buttonId, outputId, true);
 
             const systemInstruction = "You are a concise academic writer. Generate a single paragraph (max 3 sentences) summary of the provided psychological theory. Focus only on the most essential core mechanism (e.g., conflict, striving, archetypes).";
-            const userQuery = Summarize the core of ${theory.theory} by ${theory.name}.;
+            const userQuery = `Summarize the core of ${theory.theory} by ${theory.name}.`;
 
             const result = await callGeminiAPI(systemInstruction, userQuery);
             
             setLoadingState(buttonId, outputId, false);
-            document.getElementById(outputId).innerHTML = <p class="text-sm italic">${result}</p>;
+            document.getElementById(outputId).innerHTML = `<p class="text-sm italic">${result}</p>`;
         }
 
         async function generateModernScenario(theoryId) {
             const theory = theories.find(t => t.id === theoryId);
-            const buttonId = ${theoryId}-scenario-btn;
-            const outputId = ${theoryId}-llm-output;
+            const buttonId = `${theoryId}-scenario-btn`;
+            const outputId = `${theoryId}-llm-output`;
             
             setLoadingState(buttonId, outputId, true);
             
             const systemInstruction = "You are a creative writer specializing in modern psychology examples. Create a single, short, modern-day scenario (3-4 sentences) that perfectly illustrates the key concept of the provided theory, using modern contexts like social media, remote work, or technology. Format the response as a clear, single paragraph.";
-            const userQuery = Create a modern-day example illustrating the key concept of ${theory.theory} by ${theory.name}. For Freud, focus on the Id/Ego conflict. For Jung, focus on a Shadow projection. For Adler, focus on compensating for inferiority. For Horney, focus on a neurotic trend (Moving Away). For Fromm, focus on the Need for Relatedness.;
+            const userQuery = `Create a modern-day example illustrating the key concept of ${theory.theory} by ${theory.name}. For Freud, focus on the Id/Ego conflict. For Jung, focus on a Shadow projection. For Adler, focus on compensating for inferiority. For Horney, focus on a neurotic trend (Moving Away). For Fromm, focus on the Need for Relatedness.`;
 
             const result = await callGeminiAPI(systemInstruction, userQuery);
             
             setLoadingState(buttonId, outputId, false);
-            document.getElementById(outputId).innerHTML = <p class="text-sm italic">${result}</p>;
+            document.getElementById(outputId).innerHTML = `<p class="text-sm italic">${result}</p>`;
         }
         
         // --- E-MAGAZINE DATA (Detailed Content) ---
@@ -236,22 +236,22 @@
                 theory: 'Psychoanalytic Theory',
                 content: `
                     <h2 class="text-4xl section-title font-bold mb-6">Sigmund Freud: Psychoanalytic Theory</h2>
-                    <p class="mb-4 text-gray-300">Freud's theory is built upon the foundation of unconscious motives, conflicts, and early childhood experiences as the primary forces shaping personality. It is a deterministic model where the conflict between primal drives and societal norms defines the individual.</p>
+                    <p class="mb-4 text-gray-300">Freud's theory is built upon the foundation of **unconscious motives, conflicts, and early childhood experiences** as the primary forces shaping personality. It is a deterministic model where the conflict between primal drives and societal norms defines the individual.</p>
 
                     <h3 class="text-3xl section-title font-bold mt-8 mb-4 border-b border-gray-700 pb-2">Structural Model of Personality (Id, Ego, Superego)</h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                         <div class="interactive-card p-4 rounded-md">
                             <h4 class="font-bold text-red-400 text-xl mb-2">Id (The Primal)</h4>
-                            <p class="text-sm text-gray-400 detail-point">Operates on the Pleasure Principle. It seeks immediate gratification for all needs, wishes, urges, and demands, without regard for reality or morality.</p>
+                            <p class="text-sm text-gray-400 detail-point">Operates on the **Pleasure Principle**. It seeks immediate gratification for all needs, wishes, urges, and demands, without regard for reality or morality.</p>
                         </div>
                         <div class="interactive-card p-4 rounded-md">
                             <h4 class="font-bold text-blue-400 text-xl mb-2">Ego (The Mediator)</h4>
-                            <p class="text-sm text-gray-400 detail-point">Operates on the Reality Principle. The ego is the rational part of the mind that mediates the unrealistic demands of the Id and the controlling dictates of the Superego.</p>
+                            <p class="text-sm text-gray-400 detail-point">Operates on the **Reality Principle**. The ego is the rational part of the mind that mediates the unrealistic demands of the Id and the controlling dictates of the Superego.</p>
                         </div>
                         <div class="interactive-card p-4 rounded-md">
                             <h4 class="font-bold text-green-400 text-xl mb-2">Superego (The Moral)</h4>
-                            <p class="text-sm text-gray-400 detail-point">Operates on the Idealistic Principle. It is the moral arm of the personality, internalizing parental and societal standards, becoming the source of conscience and guilt.</p>
+                            <p class="text-sm text-gray-400 detail-point">Operates on the **Idealistic Principle**. It is the moral arm of the personality, internalizing parental and societal standards, becoming the source of conscience and guilt.</p>
                         </div>
                     </div>
 
@@ -265,15 +265,15 @@
                         </div>
                         <div class="detail-point">
                             <p class="font-bold text-yellow-400">Anal Stage (1–3 Years):</p>
-                            <p>Erogenous zone is the anus. Focus on toilet training and controlling bodily functions. Fixation leads to the anal character: orderliness, stinginess, and obstinacy.</p>
+                            <p>Erogenous zone is the anus. Focus on toilet training and controlling bodily functions. Fixation leads to the anal character: **orderliness, stinginess, and obstinacy**.</p>
                         </div>
                         <div class="detail-point">
                             <p class="font-bold text-yellow-400">Phallic Stage (3–6 Years):</p>
-                            <p>Genitals become the leading erogenous zone. This stage includes the Male Oedipus complex (rivalry with father, desire for mother) and the **Female Oedipus (Electra) complex** (penis envy, desire for father, hostility toward mother). The resolution of this stage, often through castration anxiety in males, is crucial for superego formation.</p>
+                            <p>Genitals become the leading erogenous zone. This stage includes the **Male Oedipus complex** (rivalry with father, desire for mother) and the **Female Oedipus (Electra) complex** (penis envy, desire for father, hostility toward mother). The resolution of this stage, often through **castration anxiety** in males, is crucial for superego formation.</p>
                         </div>
                         <div class="detail-point">
                             <p class="font-bold text-yellow-400">Latency Period (6–12 Years):</p>
-                            <p>Sexual impulses are repressed. Libido is redirected to non-sexual pursuits like school, friendships, and cultural activities.</p>
+                            <p>Sexual impulses are **repressed**. Libido is redirected to non-sexual pursuits like school, friendships, and cultural activities.</p>
                         </div>
                         <div class="detail-point">
                             <p class="font-bold text-yellow-400">Genital Period (Puberty Onward):</p>
@@ -283,10 +283,10 @@
                     
                     <h3 class="text-3xl section-title font-bold mt-8 mb-4 border-b border-gray-700 pb-2">Concept of Humanity</h3>
                     <ul class="list-disc list-inside ml-4 text-gray-300 space-y-2">
-                        <li>Deterministic: Behavior is fundamentally ruled by unconscious drives.</li>
-                        <li>Pessimistic: Humans are in constant inner conflict between the Id and the Superego, mediated by the Ego.</li>
-                        <li>Past-Driven (Causality): Childhood experiences determine adult personality.</li>
-                        <li>Biological Focus: Instincts, primarily sex and aggression, are the core drivers of behavior.</li>
+                        <li>**Deterministic:** Behavior is fundamentally ruled by **unconscious drives**.</li>
+                        <li>**Pessimistic:** Humans are in **constant inner conflict** between the Id and the Superego, mediated by the Ego.</li>
+                        <li>**Past-Driven (Causality):** Childhood experiences **determine** adult personality.</li>
+                        <li>**Biological Focus:** Instincts, primarily sex and aggression, are the **core** drivers of behavior.</li>
                     </ul>
                 `
             },
@@ -296,17 +296,17 @@
                 theory: 'Analytical Psychology',
                 content: `
                     <h2 class="text-4xl section-title font-bold mb-6">Carl Jung: Analytical Psychology</h2>
-                    <p class="mb-4 text-gray-300">Jung's theory moved beyond Freud's singular focus on sex and aggression, emphasizing a deeper, shared unconscious and a person's striving toward wholeness (Individuation). This process is driven by innate, inherited elements called Archetypes.</p>
+                    <p class="mb-4 text-gray-300">Jung's theory moved beyond Freud's singular focus on sex and aggression, emphasizing a **deeper, shared unconscious** and a person's **striving toward wholeness (Individuation)**. This process is driven by innate, inherited elements called Archetypes.</p>
 
                     <h3 class="text-3xl section-title font-bold mt-8 mb-4 border-b border-gray-700 pb-2">The Structure of the Psyche</h3>
                     <div class="space-y-4 text-gray-300">
                         <div class="detail-point">
                             <p class="font-bold text-blue-400">Personal Unconscious:</p>
-                            <p>Contains repressed thoughts, forgotten experiences, and material that was once conscious. These form complexes, emotionally-toned ideas grouped around a central element.</p>
+                            <p>Contains repressed thoughts, forgotten experiences, and material that was once conscious. These form **complexes**, emotionally-toned ideas grouped around a central element.</p>
                         </div>
                         <div class="detail-point">
                             <p class="font-bold text-blue-400">Collective Unconscious:</p>
-                            <p>The deepest, most inaccessible layer of the psyche. It contains highly developed, inherited tendencies to react to the world in a particular way. This is the reservoir of the Archetypes.</p>
+                            <p>The deepest, most inaccessible layer of the psyche. It contains highly developed, **inherited tendencies** to react to the world in a particular way. This is the reservoir of the **Archetypes**.</p>
                         </div>
                     </div>
 
@@ -318,7 +318,7 @@
                         </div>
                         <div class="interactive-card p-4 rounded-md">
                             <h4 class="font-bold text-yellow-400 text-xl mb-2">Shadow (The Dark Side)</h4>
-                            <p class="text-sm text-gray-400 detail-point">The dark, immoral, and unpleasant side of personality. Repressed qualities that the individual refuses to acknowledge, which often get projected onto others ("Everything that irritates us about others can lead us to an understanding of ourselves").</p>
+                            <p class="text-sm text-gray-400 detail-point">The dark, immoral, and unpleasant side of personality. Repressed qualities that the individual refuses to acknowledge, which often get **projected** onto others ("Everything that irritates us about others can lead us to an understanding of ourselves").</p>
                         </div>
                         <div class="interactive-card p-4 rounded-md">
                             <h4 class="font-bold text-yellow-400 text-xl mb-2">Anima and Animus</h4>
@@ -326,16 +326,16 @@
                         </div>
                         <div class="interactive-card p-4 rounded-md">
                             <h4 class="font-bold text-yellow-400 text-xl mb-2">Self (Wholeness)</h4>
-                            <p class="text-sm text-gray-400 detail-point">The ultimate archetype. It is the drive toward coherence and the unification of all aspects of the unconscious and conscious mind. This realization process is called Individuation.</p>
+                            <p class="text-sm text-gray-400 detail-point">The ultimate archetype. It is the drive toward coherence and the unification of all aspects of the unconscious and conscious mind. This realization process is called **Individuation**.</p>
                         </div>
                     </div>
                     
                     <h3 class="text-3xl section-title font-bold mt-8 mb-4 border-b border-gray-700 pb-2">Concept of Humanity (Life as the Journey of the Sun)</h3>
                     <ul class="list-disc list-inside ml-4 text-gray-300 space-y-2">
-                        <li>More Free Choice: Jung allowed for more conscious choice in navigating life's path.</li>
-                        <li>Optimistic: Optimistic about human growth and the possibility of Individuation.</li>
-                        <li>Goal-Driven (Teleology): Behavior is shaped by future wholeness, not just past trauma.</li>
-                        <li>Balanced: Both biology and culture/spirit matter, recognizing the deep impact of the collective unconscious on the individual.</li>
+                        <li>**More Free Choice:** Jung allowed for more conscious choice in navigating life's path.</li>
+                        <li>**Optimistic:** Optimistic about human growth and the possibility of **Individuation**.</li>
+                        <li>**Goal-Driven (Teleology):** Behavior is shaped by **future wholeness**, not just past trauma.</li>
+                        <li>**Balanced:** Both biology and culture/spirit matter, recognizing the deep impact of the collective unconscious on the individual.</li>
                     </ul>
                 `
             },
@@ -345,7 +345,7 @@
                 theory: 'Individual Psychology',
                 content: `
                     <h2 class="text-4xl section-title font-bold mb-6">Alfred Adler: Individual Psychology</h2>
-                    <p class="mb-4 text-gray-300">Adler's theory views the human being as an indivisible whole (hence "Individual Psychology"). The primary motivator is the striving for superiority or perfection, which originates from universal feelings of inferiority.</p>
+                    <p class="mb-4 text-gray-300">Adler's theory views the human being as an indivisible whole (hence "Individual Psychology"). The primary motivator is the **striving for superiority or perfection**, which originates from universal feelings of **inferiority**.</p>
 
                     <h3 class="text-3xl section-title font-bold mt-8 mb-4 border-b border-gray-700 pb-2">Core Tenets of Adlerian Thought</h3>
                     
@@ -356,11 +356,11 @@
                         </div>
                         <div class="detail-point">
                             <p class="font-bold text-green-400">Fictional Finalism:</p>
-                            <p>Our behavior is guided by a future goal an image of what we want to be (the Final Goal). This goal is often unattainable or "fictional," but it unifies our personality and is the ultimate source of our striving for superiority.</p>
+                            <p>Our behavior is guided by a **future goal**—an image of what we want to be (the Final Goal). This goal is often unattainable or "fictional," but it unifies our personality and is the ultimate source of our striving for superiority.</p>
                         </div>
                         <div class="detail-point">
                             <p class="font-bold text-green-400">Social Interest (<span class="italic">Gemeinschaftsgefühl</span>):</p>
-                            <p>The value of concern for others and the community. This is the measure of psychological health; healthy individuals strive for superiority while contributing to the common good.</p>
+                            <p>The value of concern for others and the community. This is the **measure of psychological health**; healthy individuals strive for superiority while contributing to the common good.</p>
                         </div>
                         <div class="detail-point">
                             <p class="font-bold text-green-400">Style of Life:</p>
@@ -368,19 +368,19 @@
                         </div>
                         <div class="detail-point">
                             <p class="font-bold text-green-400">Early Memories:</p>
-                            <p>Adler used a person's earliest memories, whether real or fictional, as windows into their guiding life attitudes, especially how they face challenges. They are clues to the Style of Life.</p>
+                            <p>Adler used a person's earliest memories, whether real or fictional, as windows into their guiding life attitudes, especially how they face challenges. **They are clues to the Style of Life.**</p>
                         </div>
                     </div>
 
                     <h3 class="text-3xl section-title font-bold mt-8 mb-4 border-b border-gray-700 pb-2">Adlerian Psychotherapy</h3>
-                    <p class="text-gray-300 mb-4">The goal is to increase Social Interest and help clients overcome feelings of inferiority by uncovering mistaken goals and reorienting them toward socially useful aims. The therapist acts as a collaborator.</p>
+                    <p class="text-gray-300 mb-4">The goal is to increase **Social Interest** and help clients overcome feelings of inferiority by uncovering mistaken goals and reorienting them toward socially useful aims. The therapist acts as a collaborator.</p>
                     
                     <h3 class="text-3xl section-title font-bold mt-8 mb-4 border-b border-gray-700 pb-2">Concept of Humanity</h3>
                     <ul class="list-disc list-inside ml-4 text-gray-300 space-y-2">
-                        <li>Optimistic: Views humans as capable of growth, improvement, and cooperation.</li>
-                        <li>Free Choice: Emphasized creative power—people are not passive products of heredity or environment.</li>
-                        <li>Conscious Orientation: People are largely aware of their goals and lifestyle.</li>
-                        <li>Social Determinants: Social Interest is central; society and relationships are the keys to personality.</li>
+                        <li>**Optimistic:** Views humans as capable of growth, improvement, and cooperation.</li>
+                        <li>**Free Choice:** Emphasized **creative power**—people are not passive products of heredity or environment.</li>
+                        <li>**Conscious Orientation:** People are largely **aware** of their goals and lifestyle.</li>
+                        <li>**Social Determinants:** Social Interest is **central**; society and relationships are the keys to personality.</li>
                     </ul>
                 `
             },
@@ -390,7 +390,7 @@
                 theory: 'Psychoanalytic Social Psychology',
                 content: `
                     <h2 class="text-4xl section-title font-bold mb-6">Karen Horney: Psychoanalytic Social Psychology</h2>
-                    <p class="mb-4 text-gray-300">Horney challenged Freud by arguing that **culture and social relationships**—not biology—are the primary shapers of personality. Neurosis stems from disturbed human relationships, particularly in childhood, leading to Basic Anxiety.</p>
+                    <p class="mb-4 text-gray-300">Horney challenged Freud by arguing that **culture and social relationships**—not biology—are the primary shapers of personality. Neurosis stems from disturbed human relationships, particularly in childhood, leading to **Basic Anxiety**.</p>
 
                     <h3 class="text-3xl section-title font-bold mt-8 mb-4 border-b border-gray-700 pb-2">Basic Anxiety and Neurotic Trends</h3>
                     <p class="text-gray-300 mb-4">Basic Anxiety is the feeling of being isolated and helpless in a potentially hostile world. Neurotic individuals cope by compulsively adopting one of three trends:</p>
@@ -422,15 +422,15 @@
                         </div>
                         <div class="detail-point">
                             <p class="font-bold text-purple-400">Feminine Psychology & Womb Envy:</p>
-                            <p>Horney famously challenged Freud's "penis envy" with the concept of Womb Envy in men. She argued that men's impressive achievements in creative fields may be seen as compensations for their inability to bear children.</p>
+                            <p>Horney famously challenged Freud's "penis envy" with the concept of **Womb Envy** in men. She argued that men's impressive achievements in creative fields may be seen as compensations for their inability to bear children.</p>
                         </div>
                     </div>
                     
                     <h3 class="text-3xl section-title font-bold mt-8 mb-4 border-b border-gray-700 pb-2">Concept of Humanity</h3>
                     <ul class="list-disc list-inside ml-4 text-gray-300 space-y-2">
-                        <li>Optimistic: Views humans as basically good and capable of growth and self-realization.</li>
-                        <li>Free Choice: People can change through self-awareness; they are not fully controlled by the past.</li>
-                        <li>Social: Personality is shaped mainly by culture and social relationships, contrasting with Freud's biological emphasis.</li>
+                        <li>**Optimistic:** Views humans as basically good and capable of **growth and self-realization**.</li>
+                        <li>**Free Choice:** People can change through **self-awareness**; they are not fully controlled by the past.</li>
+                        <li>**Social:** Personality is shaped mainly by **culture and social relationships**, contrasting with Freud's biological emphasis.</li>
                     </ul>
                 `
             },
@@ -440,7 +440,7 @@
                 theory: 'Humanistic Psychoanalysis',
                 content: `
                     <h2 class="text-4xl section-title font-bold mb-6">Erich Fromm: Humanistic Psychoanalysis</h2>
-                    <p class="mb-4 text-gray-300">Fromm's theory is a blend of Freud and socio-political critique. He believed humans are "freaks of the universe" because they possess the capacity for reason but lack the strong instincts necessary to guide them, leading to loneliness and the human dilemma.</p>
+                    <p class="mb-4 text-gray-300">Fromm's theory is a blend of Freud and socio-political critique. He believed humans are **"freaks of the universe"** because they possess the capacity for **reason** but lack the strong instincts necessary to guide them, leading to loneliness and the human dilemma.</p>
 
                     <h3 class="text-3xl section-title font-bold mt-8 mb-4 border-b border-gray-700 pb-2">The Five Existential Needs</h3>
                     <p class="text-gray-300 mb-4">These fundamental needs arise from humans being separated from nature and are necessary for psychological health:</p>
@@ -448,7 +448,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div class="interactive-card p-4 rounded-md">
                             <p class="font-bold text-amber-400">Relatedness:</p>
-                            <p class="text-sm text-gray-400">The need for union with others. It can be achieved through submission, power, or, healthily, through Productive Love.</p>
+                            <p class="text-sm text-gray-400">The need for union with others. It can be achieved through submission, power, or, healthily, through **Productive Love**.</p>
                         </div>
                         <div class="interactive-card p-4 rounded-md">
                             <p class="font-bold text-amber-400">Transcendence:</p>
@@ -476,20 +476,20 @@
                         </div>
                         <div class="detail-point">
                             <p class="font-bold text-green-400">Productive Orientation:</p>
-                            <p>The single healthy path, embodying genuine love and work as active, caring engagement with the world.</p>
+                            <p>The single healthy path, embodying genuine **love and work** as active, caring engagement with the world.</p>
                         </div>
                         <div class="detail-point">
                             <p class="font-bold text-red-400">The Malignant Syndrome:</p>
-                            <p>A severe pathology characterized by a cluster of disorders, including Necrophilia (the love of death and the hatred of humanity), Malignant Narcissism (extreme self-value and worthlessness of others), and Incestuous Symbiosis (extreme dependence on a primary figure).</p>
+                            <p>A severe pathology characterized by a cluster of disorders, including **Necrophilia** (the love of death and the hatred of humanity), **Malignant Narcissism** (extreme self-value and worthlessness of others), and **Incestuous Symbiosis** (extreme dependence on a primary figure).</p>
                         </div>
                     </div>
                     
                     <h3 class="text-3xl section-title font-bold mt-8 mb-4 border-b border-gray-700 pb-2">Concept of Humanity</h3>
                     <ul class="list-disc list-inside ml-4 text-gray-300 space-y-2">
-                        <li>Free Choice: "Man is free to create himself." Emphasized the importance of freedom and responsibility.</li>
-                        <li>Optimism: Fromm viewed humans as basically **good** and capable of growth if their existential needs are met productively.</li>
-                        <li>Teleology: Human action is purposeful and driven by **value-oriented goals**.</li>
-                        <li>Social: Society and culture shape character, and all people share basic **existential needs**.</li>
+                        <li>**Free Choice:** "Man is free to create himself." Emphasized the importance of freedom and responsibility.</li>
+                        <li>**Optimism:** Fromm viewed humans as basically **good** and capable of growth if their existential needs are met productively.</li>
+                        <li>**Teleology:** Human action is purposeful and driven by **value-oriented goals**.</li>
+                        <li>**Social:** Society and culture shape character, and all people share basic **existential needs**.</li>
                     </ul>
                 `
             }
@@ -515,7 +515,41 @@
         function loadTheory(id) {
             const theory = theories.find(t => t.id === id);
             if (theory) {
-               
+                // Construct the full content with the LLM block
+                const fullContent = `
+                    ${theory.content}
+                    
+                    <!-- --- LLM POWERED FEATURES --- -->
+                    <div class="mt-12 pt-6 border-t border-gray-700">
+                        <h3 class="text-3xl section-title font-bold mb-4">
+                            ✨ AI Learning Assistant
+                        </h3>
+                        <p class="text-gray-400 mb-4">Use the Gemini API to instantly generate helpful learning aids based on the theory above.</p>
+                        <div class="interactive-card p-6 rounded-xl space-y-4">
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <button id="${theory.id}-summary-btn" onclick="generateQuickSummary('${theory.id}')" 
+                                    class="sparkle-button flex-1 bg-yellow-600 hover:bg-yellow-700 text-black font-extrabold py-3 px-4 rounded-lg shadow-lg text-sm md:text-base transition-all duration-200">
+                                    <div class="flex items-center justify-center">
+                                        <span class="loading-animation mr-3"></span>
+                                        Generate Quick Summary
+                                    </div>
+                                </button>
+                                <button id="${theory.id}-scenario-btn" onclick="generateModernScenario('${theory.id}')" 
+                                    class="sparkle-button flex-1 bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-extrabold py-3 px-4 rounded-lg shadow-lg text-sm md:text-base transition-all duration-200">
+                                    <div class="flex items-center justify-center">
+                                        <span class="loading-animation mr-3"></span>
+                                        Create Modern Scenario
+                                    </div>
+                                </button>
+                            </div>
+                            <div id="${theory.id}-llm-output" class="p-4 border border-gray-800 bg-gray-900 rounded-md min-h-[100px] text-gray-300">
+                                <p class="text-sm">Click a button above to generate a concise summary or a fresh, modern example of ${theory.name}'s theory in action.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ----------------------------- -->
+                `;
+
                 // Update content area
                 contentArea.innerHTML = fullContent;
                 
