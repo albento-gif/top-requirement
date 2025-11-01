@@ -83,7 +83,7 @@
         <!-- Header and Main Title -->
         <header class="text-center mb-10 pb-5 border-b border-gray-700">
             <h1 class="text-4xl md:text-6xl section-title font-extrabold leading-tight">Theories of Personality: A Midterm Requirement</h1>
-            <p class="text-lg text-gray-400 mt-2">by Nina Khim B. Albento BS PSYCHOLOGY 2B</p>
+            <p class="text-lg text-gray-400 mt-2">By Nina Khim B. Albento BS PSYCHOLOGY 2B</p>
         </header>
 
         <!-- Main Content Grid -->
@@ -107,6 +107,7 @@
                         <ul class="list-disc list-inside space-y-3 ml-4 text-gray-300">
                             <li>**Detailed Explanations** of the core concepts, development, and psychopathology.</li>
                             <li>**Interactive Concept Cards** to simplify complex ideas.</li>
+                            <li>**AI Learning Assistant** powered by Gemini, for quick summaries and modern scenario generation.</li>
                         </ul>
                     </div>
 
@@ -118,6 +119,112 @@
     </div>
 
     <script type="module">
+        // --- GEMINI API UTILITIES ---
+        const apiKey = ""; // API Key is left empty as per instructions.
+        const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=" + apiKey;
+
+        /**
+         * Generic function to make a robust API call with exponential backoff.
+         */
+        async function callGeminiAPI(systemInstruction, userQuery) {
+            const maxRetries = 5;
+            let delay = 1000;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: {
+                    parts: [{ text: systemInstruction }]
+                },
+            };
+
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.status === 429) {
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        delay *= 2;
+                        continue;
+                    }
+
+                    if (!response.ok) {
+                        throw new Error(HTTP error! status: ${response.status});
+                    }
+
+                    const result = await response.json();
+                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                    if (!text) {
+                        throw new Error("Received empty or malformed response from API.");
+                    }
+
+                    return text;
+
+                } catch (error) {
+                    if (i === maxRetries - 1) {
+                        console.error("Gemini API call failed after multiple retries:", error);
+                        return "Error: Could not retrieve information. Please try again later.";
+                    }
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    delay *= 2;
+                }
+            }
+        }
+        
+        /**
+         * Sets the loading state on a specific button and output area.
+         */
+        function setLoadingState(buttonId, outputId, isLoading) {
+            const button = document.getElementById(buttonId);
+            const output = document.getElementById(outputId);
+            const spinner = button.querySelector('.loading-animation');
+
+            if (isLoading) {
+                button.disabled = true;
+                output.innerHTML = '<div class="flex items-center text-amber-400"><div class="loading-animation mr-3" style="display: block;"></div> Generating content...</div>';
+                spinner.style.display = 'block';
+            } else {
+                button.disabled = false;
+                spinner.style.display = 'none';
+            }
+        }
+
+        // --- GEMINI FEATURE FUNCTIONS ---
+
+        async function generateQuickSummary(theoryId) {
+            const theory = theories.find(t => t.id === theoryId);
+            const buttonId = ${theoryId}-summary-btn;
+            const outputId = ${theoryId}-llm-output;
+            
+            setLoadingState(buttonId, outputId, true);
+
+            const systemInstruction = "You are a concise academic writer. Generate a single paragraph (max 3 sentences) summary of the provided psychological theory. Focus only on the most essential core mechanism (e.g., conflict, striving, archetypes).";
+            const userQuery = Summarize the core of ${theory.theory} by ${theory.name}.;
+
+            const result = await callGeminiAPI(systemInstruction, userQuery);
+            
+            setLoadingState(buttonId, outputId, false);
+            document.getElementById(outputId).innerHTML = <p class="text-sm italic">${result}</p>;
+        }
+
+        async function generateModernScenario(theoryId) {
+            const theory = theories.find(t => t.id === theoryId);
+            const buttonId = ${theoryId}-scenario-btn;
+            const outputId = ${theoryId}-llm-output;
+            
+            setLoadingState(buttonId, outputId, true);
+            
+            const systemInstruction = "You are a creative writer specializing in modern psychology examples. Create a single, short, modern-day scenario (3-4 sentences) that perfectly illustrates the key concept of the provided theory, using modern contexts like social media, remote work, or technology. Format the response as a clear, single paragraph.";
+            const userQuery = Create a modern-day example illustrating the key concept of ${theory.theory} by ${theory.name}. For Freud, focus on the Id/Ego conflict. For Jung, focus on a Shadow projection. For Adler, focus on compensating for inferiority. For Horney, focus on a neurotic trend (Moving Away). For Fromm, focus on the Need for Relatedness.;
+
+            const result = await callGeminiAPI(systemInstruction, userQuery);
+            
+            setLoadingState(buttonId, outputId, false);
+            document.getElementById(outputId).innerHTML = <p class="text-sm italic">${result}</p>;
         }
         
         // --- E-MAGAZINE DATA (Detailed Content) ---
@@ -408,41 +515,7 @@
         function loadTheory(id) {
             const theory = theories.find(t => t.id === id);
             if (theory) {
-                // Construct the full content with the LLM block
-                const fullContent = `
-                    ${theory.content}
-                    
-                    <!-- --- LLM POWERED FEATURES --- -->
-                    <div class="mt-12 pt-6 border-t border-gray-700">
-                        <h3 class="text-3xl section-title font-bold mb-4">
-                            ✨ AI Learning Assistant
-                        </h3>
-                        <p class="text-gray-400 mb-4">Use the Gemini API to instantly generate helpful learning aids based on the theory above.</p>
-                        <div class="interactive-card p-6 rounded-xl space-y-4">
-                            <div class="flex flex-col sm:flex-row gap-3">
-                                <button id="${theory.id}-summary-btn" onclick="generateQuickSummary('${theory.id}')" 
-                                    class="sparkle-button flex-1 bg-yellow-600 hover:bg-yellow-700 text-black font-extrabold py-3 px-4 rounded-lg shadow-lg text-sm md:text-base transition-all duration-200">
-                                    <div class="flex items-center justify-center">
-                                        <span class="loading-animation mr-3"></span>
-                                        Generate Quick Summary
-                                    </div>
-                                </button>
-                                <button id="${theory.id}-scenario-btn" onclick="generateModernScenario('${theory.id}')" 
-                                    class="sparkle-button flex-1 bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-extrabold py-3 px-4 rounded-lg shadow-lg text-sm md:text-base transition-all duration-200">
-                                    <div class="flex items-center justify-center">
-                                        <span class="loading-animation mr-3"></span>
-                                        Create Modern Scenario
-                                    </div>
-                                </button>
-                            </div>
-                            <div id="${theory.id}-llm-output" class="p-4 border border-gray-800 bg-gray-900 rounded-md min-h-[100px] text-gray-300">
-                                <p class="text-sm">Click a button above to generate a concise summary or a fresh, modern example of ${theory.name}'s theory in action.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ----------------------------- -->
-                `;
-
+               
                 // Update content area
                 contentArea.innerHTML = fullContent;
                 
